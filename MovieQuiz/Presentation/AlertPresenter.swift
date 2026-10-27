@@ -9,7 +9,7 @@ import UIKit
 /// Класс, отвечающий за отображение алертов в приложении
 final class AlertPresenter {
     
-    // Слабая ссылка на контроллер для избежания утечек памяти (retain cycles)
+    // Слабая ссылка на контроллер для избежания утечек памяти
     private weak var delegate: UIViewController?
     
     // Передаем контроллер при инициализации
@@ -26,13 +26,13 @@ final class AlertPresenter {
         )
         
         let action = UIAlertAction(title: model.buttonText, style: .default) { _ in
-            // Вызываем блок кода замыкания (перезапуск игры)
+            // перезапуск игры
             model.completion()
         }
         
         alert.addAction(action)
         
-        // Показываем алерт на экране текущего контроллера
+        // Показ алерта на экране контроллера
         delegate?.present(alert, animated: true, completion: nil)
     }
 }

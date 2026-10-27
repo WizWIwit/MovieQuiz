@@ -16,6 +16,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
     private var currentQuestion: QuizQuestion?
+    private let statisticService: StatisticServiceProtocol = StatisticService()
+
     
     // Фабрика вопросов
     private let questionFactory: QuestionFactoryProtocol = QuestionFactory()
@@ -96,10 +98,30 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == 10 - 1 {
-            let text = "Ваш результат: \(correctAnswers)/10"
+
+            // Сохраняем результаты игры в UserDefaults через сервис
+            statisticService.store(correct: correctAnswers, total: 10)
+
+            // Получаем актуальные данные из сервиса для текста алерта
+            let gamesCount = statisticService.gamesCount
+            let bestGame = statisticService.bestGame
+            let totalAccuracy = String(format: "%.2f", statisticService.totalAccuracy)
+
+            // Форматируем дату рекорда в привычный вид
+            let dateText = bestGame.date.dateTimeString
+
+            // Формирууем многострочный текс по макету из задания
+            let statsText = """
+            Ваш результат: \(correctAnswers)/10
+            Количество сыгранных игр: \(gamesCount)
+            Рекорд: \(bestGame.correct)/\(bestGame.total) (\(dateText))
+            Средняя точность: \(totalAccuracy)%
+            """
+
+            // Передаем текст во вью-модель алерта
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
-                text: text,
+                text: statsText, // здесь вся статистика за все игры
                 buttonText: "Сыграть ещё раз"
             )
             show(quiz: viewModel)
@@ -119,13 +141,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         ) { [weak self] in
             guard let self = self else { return }
             
-            // Замыкание: сброс параметров и запуск квиза заново при нажатии на кнопку
+            // сброс параметров и запуск игры заново при нажатии на кнопку
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             self.questionFactory.requestNextQuestion()
         }
         
-        // 2. Передаем модель в презентер для отрисовки на экране
+        // Передаем модель в презентер для отрисовки на экране
         alertPresenter?.showAlert(model: alertModel)
     }
     

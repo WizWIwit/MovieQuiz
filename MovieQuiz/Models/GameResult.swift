@@ -2,7 +2,17 @@
 //  GameResult.swift
 //  MovieQuiz
 //
-//  Created by WizWI on 28.10.2026.
 //
 
 import Foundation
+
+struct GameResult: Comparable {
+    let correct: Int
+    let total: Int
+    let date: Date
+    
+    static func < (lhs: GameResult, rhs: GameResult) -> Bool {
+        return lhs.correct < rhs.correct
+    }
+}
+
