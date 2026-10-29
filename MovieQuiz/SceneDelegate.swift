@@ -4,6 +4,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
+    // первая инициализация UI
     func scene(
         _ scene: UIScene,
         willConnectTo session: UISceneSession,

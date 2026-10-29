@@ -36,7 +36,7 @@ final class StatisticService: StatisticServiceProtocol {
             let correct = userDefaults.integer(forKey: Keys.bestGameCorrect.rawValue)
             let total = userDefaults.integer(forKey: Keys.bestGameTotal.rawValue)
             
-            // ИСПРАВЛЕНИЕ: Если даты в базе нет (первый запуск), возвращаем "1970"
+            // Если даты в базе нет (первый запуск), возвращаем "1970"
             // Если возвращать Date(), то при первой игре условие сравнения будет некорректным.
             let date = userDefaults.object(forKey: Keys.bestGameDate.rawValue) as? Date ?? Date(timeIntervalSince1970: 0)
             
@@ -76,8 +76,8 @@ final class StatisticService: StatisticServiceProtocol {
         let currentBestGame = bestGame
         let newResult = GameResult(correct: count, total: amount, date: Date())
         
-        // ИСПРАВЛЕНИЕ: Проверяем, первая ли это игра. Если игр еще не было (дата равна 1970),
-        // сохраняем результат безоговорочно. Иначе — сравниваем с прошлым рекордом.
+        // Проверяем, первая ли это игра. Если игр еще не было (дата равна 1970),
+        // сохраняем результат. Иначе сравниваем с прошлым рекордом.
         if currentBestGame.date == Date(timeIntervalSince1970: 0) {
             bestGame = newResult
         } else if newResult > currentBestGame {
@@ -85,4 +85,4 @@ final class StatisticService: StatisticServiceProtocol {
         }
     }
 }
-//Финальная версия
+
