@@ -9,7 +9,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    // MARK: UISceneSession Lifecycle
+    // MARK: UISceneSession ЖЦ
 
     func application(
         _ application: UIApplication,
