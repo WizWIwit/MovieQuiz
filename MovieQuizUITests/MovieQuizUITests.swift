@@ -2,42 +2,108 @@
 //  MovieQuizUITests.swift
 //  MovieQuizUITests
 //
-//  Created by WizWI on 08.11.2026.
-//
+
+
 
 import XCTest
 
 final class MovieQuizUITests: XCTestCase {
-
+    
+    var app: XCUIApplication!
+    
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
-        continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
+        try super.setUpWithError()
+        
+        app = XCUIApplication()
+        app.launchArguments = ["-UITest"]
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // XCUIAutomation Documentation
-        // https://developer.apple.com/documentation/xcuiautomation
+        
+        continueAfterFailure = false
     }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+    
+    override func tearDownWithError() throws {
+        try super.tearDownWithError()
+        
+        app.terminate()
+        app = nil
+    }
+    
+    func testYesButton() {
+        sleep(3)
+        
+        XCTAssertFalse(app.alerts.element.exists, "На экране появился алерт ошибки сети!")
+        
+        let firstPoster = app.images["Poster"]
+        XCTAssertTrue(firstPoster.waitForExistence(timeout: 10), "Первый постер не появился на экране")
+        let firstPosterData = firstPoster.screenshot().pngRepresentation
+        
+        let yesButton = app.buttons["Yes"]
+        XCTAssertTrue(yesButton.isEnabled, "Кнопка Yes заблокирована")
+        yesButton.tap()
+        
+        sleep(7)
+        
+        let secondPoster = app.images["Poster"]
+        let secondPosterData = secondPoster.screenshot().pngRepresentation
+        
+        let indexLabel = app.staticTexts["Index"]
+        
+        XCTAssertNotEqual(firstPosterData, secondPosterData)
+        XCTAssertEqual(indexLabel.label, "2/10")
+    }
+    
+    func testNoButton() {
+        sleep(3)
+        
+        let firstPoster = app.images["Poster"]
+        XCTAssertTrue(firstPoster.waitForExistence(timeout: 10))
+        let firstPosterData = firstPoster.screenshot().pngRepresentation
+        
+        let noButton = app.buttons["No"]
+        XCTAssertTrue(noButton.isEnabled)
+        noButton.tap()
+        
+        sleep(7)
+        
+        let secondPoster = app.images["Poster"]
+        let secondPosterData = secondPoster.screenshot().pngRepresentation
+        
+        let indexLabel = app.staticTexts["Index"]
+        
+        XCTAssertNotEqual(firstPosterData, secondPosterData)
+        XCTAssertEqual(indexLabel.label, "2/10")
+    }
+    
+    func testGameFinish() {
+        sleep(2)
+        for _ in 1...10 {
+            app.buttons["No"].tap()
+            sleep(2)
         }
+        
+        let alert = app.alerts.element
+        
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        XCTAssertEqual(alert.label, "Этот раунд окончен!")
+        XCTAssertEqual(alert.buttons.firstMatch.label, "Сыграть ещё раз")
+    }
+    
+    func testAlertDismiss() {
+        sleep(2)
+        for _ in 1...10 {
+            app.buttons["No"].tap()
+            sleep(2)
+        }
+        
+        let alert = app.alerts.element
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        alert.buttons.firstMatch.tap()
+        
+        sleep(2)
+        
+        let indexLabel = app.staticTexts["Index"]
+        
+        XCTAssertFalse(app.alerts.element.exists)
+        XCTAssertEqual(indexLabel.label, "1/10")
     }
 }

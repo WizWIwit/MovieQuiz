@@ -5,37 +5,30 @@
 //  Created by WizWI on 29.10.2026.
 //
 
-import Testing
 import XCTest
+@testable import MovieQuiz
 
-
-struct ArithmeticOperations {
-    func addition(num1: Int, num2: Int) -> Int {
-        return num1 + num2
-    }
-    
-    func subtraction(num1: Int, num2: Int) -> Int {
-        return num1 - num2
-    }
-    
-    func multiplication(num1: Int, num2: Int) -> Int {
-        return num1 * num2
-    }
-}
-
-struct MovieQuizTests {
-
-    @Test func testAddition() throws {
+final class ArrayTests: XCTestCase {
+    func testGetValueInRange() throws {
         // Given
-        let arithmeticOperations = ArithmeticOperations()
-        let num1 = 1
-        let num2 = 2
+        let array = [1, 1, 2, 3, 5]
         
         // When
-        let result = arithmeticOperations.addition(num1: num1, num2: num2)
+        let value = array[safe: 2]
         
         // Then
-        XCTAssertEqual(result, 3)
+        XCTAssertNotNil(value)
+        XCTAssertEqual(value, 2)
     }
-
+    
+    func testGetValueOutOfRange() throws {
+        // Given
+        let array = [1, 1, 2, 3, 5]
+        
+        // When
+        let value = array[safe: 20]
+        
+        // Then
+        XCTAssertNil(value)
+    }
 }
