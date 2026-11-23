@@ -23,6 +23,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         alertPresenter = AlertPresenter(delegate: self)
         imageView.layer.cornerRadius = 20
         
+        // Принудительное скругление углов кнопок по макету Figma для всех версий iOS
+               noButton.layer.cornerRadius = 15
+               noButton.layer.masksToBounds = true
+               yesButton.layer.cornerRadius = 15
+               yesButton.layer.masksToBounds = true
+        
         presenter = MovieQuizPresenter(viewController: self)
     }
     
